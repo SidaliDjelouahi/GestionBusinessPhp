@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>G-Business — Gérez votre business intelligemment</title>
+  <meta name="description" content="G-Business est la plateforme intelligente pour gérer votre entreprise : finances, clients, stocks et bien plus encore." />
+
+  <!-- Bootstrap 5 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ==================== ROOT & RESET ==================== */
+    :root {
+      --primary:        #6C63FF;
+      --primary-dark:   #4e46e5;
+      --primary-light:  #a5a0ff;
+      --accent:         #FF6584;
+      --accent2:        #43CBFF;
+      --dark:           #0d0e1a;
+      --dark-2:         #12132a;
+      --dark-3:         #1a1b35;
+      --glass-bg:       rgba(255, 255, 255, 0.06);
+      --glass-border:   rgba(255, 255, 255, 0.12);
+      --text-primary:   #f0f1ff;
+      --text-muted:     #9394b8;
+      --card-bg:        rgba(255,255,255,0.04);
+      --radius:         16px;
+      --transition:     0.3s cubic-bezier(.4,0,.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--dark);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+
+    /* ==================== SCROLLBAR ==================== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--dark); }
+    ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+
+    /* ==================== NAVBAR ==================== */
+    #mainNavbar {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      transition: background var(--transition), box-shadow var(--transition);
+      padding: 0.75rem 0;
+    }
+
+    #mainNavbar.scrolled {
+      background: rgba(13, 14, 26, 0.92);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.4);
+    }
+
+    .navbar-brand {
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--primary-light), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .navbar-brand .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--primary), var(--accent2));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      -webkit-text-fill-color: #fff;
+    }
+
+    .nav-link {
+      color: var(--text-muted) !important;
+      font-weight: 500;
+      font-size: 0.9rem;
+      padding: 0.45rem 0.85rem !important;
+      border-radius: 8px;
+      transition: color var(--transition), background var(--transition);
+      position: relative;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--text-primary) !important;
+      background: rgba(108, 99, 255, 0.12);
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 20px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent2));
+      border-radius: 2px;
+      transition: transform var(--transition);
+    }
+
+    .nav-link:hover::after { transform: translateX(-50%) scaleX(1); }
+
+    /* Navbar Toggler */
+    .navbar-toggler {
+      border: 1px solid var(--glass-border);
+      padding: 0.4rem 0.7rem;
+      border-radius: 8px;
+    }
+    .navbar-toggler:focus { box-shadow: 0 0 0 3px rgba(108,99,255,0.25); }
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28163%2C160%2C255%2C1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+
+    /* Navbar Buttons */
+    .btn-nav-login {
+      border: 1.5px solid rgba(108,99,255,0.5);
+      color: var(--primary-light) !important;
+      border-radius: 10px;
+      padding: 0.42rem 1.1rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      background: transparent;
+      transition: all var(--transition);
+      text-decoration: none;
+    }
+    .btn-nav-login:hover {
+      background: rgba(108,99,255,0.15);
+      border-color: var(--primary);
+      color: white !important;
+    }
+
+    .btn-nav-signup {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white !important;
+      border-radius: 10px;
+      padding: 0.42rem 1.1rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border: none;
+      transition: all var(--transition);
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(108,99,255,0.35);
+    }
+    .btn-nav-signup:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(108,99,255,0.5);
+      color: white !important;
+    }
+
+    .btn-nav-logout {
+      background: linear-gradient(135deg, #e53e3e, #c53030);
+      color: white !important;
+      border-radius: 10px;
+      padding: 0.42rem 1.1rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border: none;
+      transition: all var(--transition);
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(229,62,62,0.3);
+      display: none; /* hidden by default */
+    }
+    .btn-nav-logout:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(229,62,62,0.45);
+      color: white !important;
+    }
+    .btn-nav-logout.visible { display: inline-flex; align-items: center; gap: 0.4rem; }
+
+    /* ==================== HERO SECTION ==================== */
+    #home {
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 50%, rgba(108,99,255,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 20% 80%, rgba(67,203,255,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 50% -10%, rgba(255,101,132,0.08) 0%, transparent 60%),
+        linear-gradient(160deg, var(--dark-2) 0%, var(--dark) 60%, var(--dark-3) 100%);
+      display: flex;
+      align-items: center;
+      padding-top: 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Floating orbs */
+    #home::before {
+      content: '';
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(108,99,255,0.08) 0%, transparent 70%);
+      top: -100px;
+      right: -100px;
+      border-radius: 50%;
+      animation: floatOrb 8s ease-in-out infinite;
+    }
+    #home::after {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(67,203,255,0.06) 0%, transparent 70%);
+      bottom: -80px;
+      left: -60px;
+      border-radius: 50%;
+      animation: floatOrb 10s ease-in-out infinite reverse;
+    }
+
+    @keyframes floatOrb {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      50% { transform: translate(30px, -30px) scale(1.05); }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(108,99,255,0.15);
+      border: 1px solid rgba(108,99,255,0.3);
+      border-radius: 50px;
+      padding: 0.35rem 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--primary-light);
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 0.6s ease both;
+    }
+    .hero-badge .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent2);
+      border-radius: 50%;
+      animation: pulse 2s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.8); }
+    }
+
+    .hero-headline {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 0.7s 0.1s ease both;
+    }
+
+    .hero-headline .gradient-text {
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent2) 50%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 480px;
+      margin-bottom: 2.5rem;
+      font-weight: 400;
+      animation: fadeInUp 0.7s 0.2s ease both;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      animation: fadeInUp 0.7s 0.3s ease both;
+    }
+
+    .btn-cta-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 0.85rem 2rem;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 8px 30px rgba(108,99,255,0.4);
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-cta-primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .btn-cta-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 40px rgba(108,99,255,0.55);
+      color: white;
+    }
+    .btn-cta-primary:hover::before { opacity: 1; }
+
+    .btn-cta-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: transparent;
+      color: var(--text-muted);
+      border: 1.5px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 0.85rem 1.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all var(--transition);
+    }
+    .btn-cta-secondary:hover {
+      border-color: rgba(108,99,255,0.5);
+      color: var(--text-primary);
+      background: rgba(108,99,255,0.08);
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 2rem;
+      margin-top: 3rem;
+      animation: fadeInUp 0.7s 0.4s ease both;
+    }
+    .stat-item { text-align: left; }
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-light), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+    .stat-label { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; font-weight: 500; }
+
+    /* Hero Illustration */
+    .hero-illustration {
+      position: relative;
+      animation: fadeInRight 0.9s 0.2s ease both;
+    }
+
+    @keyframes fadeInRight {
+      from { opacity: 0; transform: translateX(40px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .hero-svg-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .dashboard-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-14px); }
+    }
+
+    .dash-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.2rem;
+    }
+    .dash-title { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+    .dash-badge {
+      background: rgba(67,203,255,0.15);
+      border: 1px solid rgba(67,203,255,0.3);
+      color: var(--accent2);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 50px;
+    }
+
+    .dash-metric {
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff, var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.2rem;
+    }
+    .dash-sub { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    .dash-trend {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #48bb78;
+    }
+
+    /* Mini bar chart */
+    .mini-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 5px;
+      height: 55px;
+      margin-top: 1rem;
+    }
+    .bar {
+      flex: 1;
+      border-radius: 4px 4px 0 0;
+      background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+      opacity: 0.7;
+      animation: barGrow 1s ease both;
+    }
+    .bar:nth-child(1) { height: 40%; animation-delay: 0.1s; }
+    .bar:nth-child(2) { height: 65%; animation-delay: 0.15s; }
+    .bar:nth-child(3) { height: 50%; animation-delay: 0.2s; }
+    .bar:nth-child(4) { height: 80%; animation-delay: 0.25s; }
+    .bar:nth-child(5) { height: 55%; animation-delay: 0.3s; }
+    .bar:nth-child(6) { height: 90%; animation-delay: 0.35s; background: linear-gradient(180deg, var(--accent2) 0%, #2b7fff 100%); opacity: 1; }
+    .bar:nth-child(7) { height: 70%; animation-delay: 0.4s; }
+
+    @keyframes barGrow {
+      from { transform: scaleY(0); transform-origin: bottom; }
+      to   { transform: scaleY(1); transform-origin: bottom; }
+    }
+
+    /* Floating mini-cards */
+    .mini-card {
+      position: absolute;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 0.75rem 1rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+    .mini-card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .mini-card-text .val {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+    .mini-card-text .lbl { font-size: 0.68rem; color: var(--text-muted); margin-top: 2px; }
+
+    .mini-card-1 {
+      top: -18px;
+      right: -20px;
+      animation: float2 5s 1s ease-in-out infinite;
+    }
+    .mini-card-2 {
+      bottom: 20px;
+      left: -25px;
+      animation: float2 7s 0.5s ease-in-out infinite reverse;
+    }
+
+    @keyframes float2 {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* ==================== FEATURES SECTION ==================== */
+    #features {
+      padding: 7rem 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 0%, rgba(108,99,255,0.06) 0%, transparent 70%),
+        var(--dark-2);
+      position: relative;
+    }
+
+    .section-eyebrow {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--primary-light);
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-size: clamp(1.9rem, 4vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .section-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 500px;
+      margin: 0 auto 3.5rem;
+      line-height: 1.7;
+    }
+
+    /* Feature Cards */
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 2rem 1.75rem;
+      height: 100%;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition), background var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(108,99,255,0.35);
+      background: rgba(108,99,255,0.07);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.35), 0 0 0 1px rgba(108,99,255,0.15);
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon-wrap {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+
+    .feature-icon-wrap::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 15px;
+      padding: 1px;
+      background: linear-gradient(135deg, var(--primary), transparent);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    }
+
+    .icon-purple { background: rgba(108,99,255,0.15); color: var(--primary-light); }
+    .icon-cyan   { background: rgba(67,203,255,0.15); color: var(--accent2); }
+    .icon-pink   { background: rgba(255,101,132,0.15); color: var(--accent); }
+
+    .feature-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.65rem;
+      color: var(--text-primary);
+    }
+
+    .feature-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .feature-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary-light);
+      text-decoration: none;
+      margin-top: 1.25rem;
+      transition: gap var(--transition), color var(--transition);
+    }
+    .feature-link:hover { color: white; gap: 0.7rem; }
+
+    /* ==================== ABOUT SECTION ==================== */
+    #about {
+      padding: 7rem 0;
+      background: var(--dark);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-glow {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(108,99,255,0.07) 0%, transparent 70%);
+      left: -150px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .about-img-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .about-illustration {
+      width: 100%;
+      max-width: 420px;
+      border-radius: 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      padding: 2rem;
+      position: relative;
+    }
+
+    .about-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem;
+      border-radius: 12px;
+      transition: background var(--transition);
+      margin-bottom: 0.5rem;
+    }
+    .about-step:hover { background: rgba(108,99,255,0.07); }
+
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-content .step-title { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.2rem; }
+    .step-content .step-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+    .about-text h2 {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.2;
+      margin-bottom: 1.2rem;
+    }
+    .about-text p {
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+    }
+
+    .check-list { list-style: none; padding: 0; margin-bottom: 2rem; }
+    .check-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .check-list li:last-child { border-bottom: none; }
+    .check-list li i { color: #48bb78; font-size: 0.85rem; flex-shrink: 0; }
+
+    /* ==================== CONTACT SECTION ==================== */
+    #contact {
+      padding: 7rem 0;
+      background: var(--dark-2);
+    }
+
+    .contact-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 3rem;
+      max-width: 640px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent2), var(--accent));
+    }
+
+    .form-control-dark {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      color: var(--text-primary);
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      transition: all var(--transition);
+    }
+    .form-control-dark:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(108,99,255,0.25);
+      border-color: rgba(108,99,255,0.5);
+      background: rgba(108,99,255,0.07);
+      color: var(--text-primary);
+    }
+    .form-control-dark::placeholder { color: var(--text-muted); }
+
+    .form-label-dark { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; }
+
+    .btn-submit {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 0.85rem 2rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      width: 100%;
+      transition: all var(--transition);
+      box-shadow: 0 8px 25px rgba(108,99,255,0.35);
+    }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 35px rgba(108,99,255,0.5);
+      color: white;
+    }
+
+    /* ==================== FOOTER ==================== */
+    footer {
+      background: var(--dark-3);
+      border-top: 1px solid var(--glass-border);
+      padding: 3rem 0 2rem;
+    }
+
+    .footer-brand {
+      font-weight: 800;
+      font-size: 1.3rem;
+      background: linear-gradient(135deg, var(--primary-light), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; max-width: 280px; }
+
+    .footer-heading {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .footer-links { list-style: none; padding: 0; }
+    .footer-links li { margin-bottom: 0.5rem; }
+    .footer-links a {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    .footer-links a:hover { color: var(--primary-light); }
+
+    .footer-divider {
+      border-color: var(--glass-border);
+      margin: 2rem 0 1.5rem;
+    }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-copy { font-size: 0.82rem; color: var(--text-muted); }
+    .footer-copy span { color: var(--accent); }
+
+    .social-links { display: flex; gap: 0.6rem; }
+    .social-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--glass-border);
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all var(--transition);
+    }
+    .social-btn:hover {
+      border-color: rgba(108,99,255,0.5);
+      background: rgba(108,99,255,0.12);
+      color: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    /* ==================== ANIMATIONS ==================== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-on-scroll {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .animate-on-scroll.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 991px) {
+      .hero-stats { gap: 1.5rem; }
+      .hero-illustration { margin-top: 3rem; }
+      .mini-card-1, .mini-card-2 { display: none; }
+    }
+    @media (max-width: 767px) {
+      .hero-stats { gap: 1.2rem; }
+      .stat-value { font-size: 1.3rem; }
+      .contact-card { padding: 2rem 1.5rem; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+      .social-links { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ==================== NAVBAR ==================== -->
+<nav id="mainNavbar" class="navbar navbar-expand-lg sticky-top" aria-label="Navigation principale">
+  <div class="container">
+    <!-- Brand -->
+    <a class="navbar-brand" href="#home" id="navBrand">
+      <span class="brand-icon"><i class="fas fa-chart-line"></i></span>
+      G-Business
+    </a>
+
+    <!-- Hamburger -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent"
+      aria-controls="navContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Nav links -->
+    <div class="collapse navbar-collapse" id="navContent">
+      <ul class="navbar-nav mx-auto gap-1">
+        <li class="nav-item"><a class="nav-link active" href="#home" id="navHome">Accueil</a></li>
+        <li class="nav-item"><a class="nav-link" href="#features" id="navFeatures">Fonctionnalités</a></li>
+        <li class="nav-item"><a class="nav-link" href="#about" id="navAbout">À propos</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contact" id="navContact">Contact</a></li>
+      </ul>
+
+      <!-- Auth buttons -->
+      <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+        <a href="login.php" class="btn-nav-login" id="btnLogin">
+          <i class="fas fa-sign-in-alt me-1"></i>Connexion
+        </a>
+        <a href="signup.php" class="btn-nav-signup" id="btnSignup">
+          <i class="fas fa-user-plus me-1"></i>S'inscrire
+        </a>
+        <a href="logout.php" class="btn-nav-logout" id="btnLogout">
+          <i class="fas fa-sign-out-alt"></i>Déconnexion
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ==================== HERO SECTION ==================== -->
+<section id="home">
+  <div class="container py-5 position-relative" style="z-index:1;">
+    <div class="row align-items-center min-vh-100 py-5">
+
+      <!-- Left: Text -->
+      <div class="col-lg-6">
+        <div class="hero-badge">
+          <span class="dot"></span>
+          Nouvelle génération de gestion
+        </div>
+        <h1 class="hero-headline">
+          Gérez votre<br />
+          business<br />
+          <span class="gradient-text">intelligemment</span>
+        </h1>
+        <p class="hero-subtitle">
+          Centralisez vos finances, clients, commandes et stocks dans une seule plateforme puissante. Prenez des décisions éclairées grâce à des analyses en temps réel.
+        </p>
+        <div class="hero-cta-group">
+          <a href="signup.php" class="btn-cta-primary" id="heroSignupBtn">
+            Commencer maintenant
+            <i class="fas fa-arrow-right"></i>
+          </a>
+          <a href="#features" class="btn-cta-secondary">
+            <i class="fas fa-play-circle"></i>
+            Voir les fonctionnalités
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-value">+2K</div>
+            <div class="stat-label">Entreprises actives</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">98%</div>
+            <div class="stat-label">Taux de satisfaction</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">24/7</div>
+            <div class="stat-label">Support disponible</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Dashboard illustration -->
+      <div class="col-lg-6">
+        <div class="hero-illustration">
+          <div class="hero-svg-wrapper">
+            <!-- Floating mini cards -->
+            <div class="mini-card mini-card-1">
+              <div class="mini-card-icon" style="background:rgba(72,187,120,0.15);color:#48bb78;">
+                <i class="fas fa-arrow-trend-up"></i>
+              </div>
+              <div class="mini-card-text">
+                <div class="val">+24.5%</div>
+                <div class="lbl">Revenus mensuels</div>
+              </div>
+            </div>
+
+            <!-- Main dashboard card -->
+            <div class="dashboard-card">
+              <div class="dash-header">
+                <span class="dash-title"><i class="fas fa-chart-bar me-1"></i>Tableau de bord</span>
+                <span class="dash-badge">LIVE</span>
+              </div>
+              <div class="dash-metric">148 620 DA</div>
+              <div class="dash-sub">Chiffre d'affaires — Avril 2026</div>
+              <div class="dash-trend">
+                <i class="fas fa-caret-up"></i>
+                +18.3% par rapport au mois dernier
+              </div>
+
+              <div class="mini-chart">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+              </div>
+
+              <!-- Bottom stats row -->
+              <div class="row g-2 mt-2">
+                <div class="col-4">
+                  <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:0.65rem;text-align:center;">
+                    <div style="font-size:1rem;font-weight:700;color:#48bb78;">234</div>
+                    <div style="font-size:0.65rem;color:var(--text-muted);">Commandes</div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:0.65rem;text-align:center;">
+                    <div style="font-size:1rem;font-weight:700;color:var(--accent2);">87</div>
+                    <div style="font-size:0.65rem;color:var(--text-muted);">Clients</div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:0.65rem;text-align:center;">
+                    <div style="font-size:1rem;font-weight:700;color:var(--accent);">12</div>
+                    <div style="font-size:0.65rem;color:var(--text-muted);">Alertes</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Floating mini card 2 -->
+            <div class="mini-card mini-card-2">
+              <div class="mini-card-icon" style="background:rgba(108,99,255,0.15);color:var(--primary-light);">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="mini-card-text">
+                <div class="val">87 clients</div>
+                <div class="lbl">+5 ce mois-ci</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FEATURES SECTION ==================== -->
+<section id="features">
+  <div class="container">
+    <div class="text-center">
+      <span class="section-eyebrow animate-on-scroll">Fonctionnalités</span>
+      <h2 class="section-title animate-on-scroll">Tout ce dont vous avez besoin</h2>
+      <p class="section-subtitle animate-on-scroll">Une suite complète d'outils pour propulser votre entreprise vers le succès.</p>
+    </div>
+
+    <div class="row g-4">
+      <!-- Card 1 -->
+      <div class="col-md-4 animate-on-scroll">
+        <div class="feature-card">
+          <div class="feature-icon-wrap icon-purple">
+            <i class="fas fa-chart-pie"></i>
+          </div>
+          <h3 class="feature-title">Analyses & Rapports</h3>
+          <p class="feature-desc">Visualisez vos performances en temps réel grâce à des tableaux de bord interactifs et des rapports automatisés.</p>
+          <a href="#" class="feature-link">
+            En savoir plus <i class="fas fa-arrow-right fa-xs"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="col-md-4 animate-on-scroll" style="transition-delay:0.1s;">
+        <div class="feature-card">
+          <div class="feature-icon-wrap icon-cyan">
+            <i class="fas fa-users-gear"></i>
+          </div>
+          <h3 class="feature-title">Gestion des Clients</h3>
+          <p class="feature-desc">Centralisez toutes vos relations clients, suivez l'historique des commandes et fidélisez facilement votre clientèle.</p>
+          <a href="#" class="feature-link">
+            En savoir plus <i class="fas fa-arrow-right fa-xs"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="col-md-4 animate-on-scroll" style="transition-delay:0.2s;">
+        <div class="feature-card">
+          <div class="feature-icon-wrap icon-pink">
+            <i class="fas fa-boxes-stacked"></i>
+          </div>
+          <h3 class="feature-title">Gestion des Stocks</h3>
+          <p class="feature-desc">Gérez vos inventaires intelligemment avec des alertes de réapprovisionnement et un suivi précis en temps réel.</p>
+          <a href="#" class="feature-link">
+            En savoir plus <i class="fas fa-arrow-right fa-xs"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== ABOUT SECTION ==================== -->
+<section id="about">
+  <div class="about-glow"></div>
+  <div class="container position-relative" style="z-index:1;">
+    <div class="row align-items-center g-5">
+
+      <!-- Left: Steps illustration -->
+      <div class="col-lg-5 animate-on-scroll">
+        <div class="about-illustration">
+          <div style="font-size:0.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--primary-light);margin-bottom:1.25rem;">
+            <i class="fas fa-rocket me-1"></i> Comment ça marche
+          </div>
+          <div class="about-step">
+            <div class="step-num">01</div>
+            <div class="step-content">
+              <div class="step-title">Créez votre compte</div>
+              <div class="step-desc">Installation en moins de 2 minutes, aucune carte bancaire requise.</div>
+            </div>
+          </div>
+          <div class="about-step">
+            <div class="step-num">02</div>
+            <div class="step-content">
+              <div class="step-title">Configurez votre business</div>
+              <div class="step-desc">Importez vos données existantes ou commencez de zéro facilement.</div>
+            </div>
+          </div>
+          <div class="about-step">
+            <div class="step-num">03</div>
+            <div class="step-content">
+              <div class="step-title">Analysez & Développez</div>
+              <div class="step-desc">Utilisez nos insights pour prendre les meilleures décisions.</div>
+            </div>
+          </div>
+          <div class="about-step">
+            <div class="step-num">04</div>
+            <div class="step-content">
+              <div class="step-title">Collaborez en équipe</div>
+              <div class="step-desc">Invitez votre équipe et gérez les accès selon les rôles.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Text -->
+      <div class="col-lg-7 animate-on-scroll">
+        <div class="about-text">
+          <span class="section-eyebrow">À propos</span>
+          <h2>
+            La solution simple pour<br/>
+            <span style="background:linear-gradient(135deg,var(--primary-light),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+              les PME algériennes
+            </span>
+          </h2>
+          <p>
+            G-Business est né d'un besoin réel : offrir aux petites et moyennes entreprises algériennes un outil de gestion moderne, intuitif et abordable, conçu pour leur réalité locale.
+          </p>
+          <p>
+            Notre plateforme s'adapte à tous les secteurs — commerce, artisanat, services — et vous accompagne dans chaque étape de votre croissance.
+          </p>
+          <ul class="check-list">
+            <li><i class="fas fa-check-circle"></i> Interface intuitive, aucune formation requise</li>
+            <li><i class="fas fa-check-circle"></i> Données sécurisées hébergées localement</li>
+            <li><i class="fas fa-check-circle"></i> Support en français et en arabe</li>
+            <li><i class="fas fa-check-circle"></i> Mises à jour régulières et gratuites</li>
+          </ul>
+          <a href="signup.php" class="btn-cta-primary" style="display:inline-flex;" id="aboutSignupBtn">
+            Essayer gratuitement <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CONTACT SECTION ==================== -->
+<section id="contact">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-eyebrow animate-on-scroll">Contact</span>
+      <h2 class="section-title animate-on-scroll">Parlons de votre projet</h2>
+      <p class="section-subtitle animate-on-scroll">Une question ? Une demande ? Notre équipe vous répond sous 24h.</p>
+    </div>
+
+    <div class="contact-card animate-on-scroll">
+      <form id="contactForm" novalidate>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label-dark" for="contactName">Nom complet</label>
+            <input type="text" id="contactName" class="form-control form-control-dark" placeholder="Votre nom" required />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-dark" for="contactEmail">Adresse e-mail</label>
+            <input type="email" id="contactEmail" class="form-control form-control-dark" placeholder="votre@email.com" required />
+          </div>
+          <div class="col-12">
+            <label class="form-label-dark" for="contactSubject">Sujet</label>
+            <input type="text" id="contactSubject" class="form-control form-control-dark" placeholder="De quoi souhaitez-vous parler ?" />
+          </div>
+          <div class="col-12">
+            <label class="form-label-dark" for="contactMessage">Message</label>
+            <textarea id="contactMessage" class="form-control form-control-dark" rows="5" placeholder="Décrivez votre besoin..." required></textarea>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-submit" id="contactSubmitBtn">
+              <i class="fas fa-paper-plane me-2"></i>Envoyer le message
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer>
+  <div class="container">
+    <div class="row g-4">
+      <!-- Brand -->
+      <div class="col-lg-4">
+        <a href="#home" class="footer-brand">
+          <span class="brand-icon" style="width:30px;height:30px;font-size:0.85rem;border-radius:8px;background:linear-gradient(135deg,var(--primary),var(--accent2));display:flex;align-items:center;justify-content:center;-webkit-text-fill-color:#fff;">
+            <i class="fas fa-chart-line"></i>
+          </span>
+          G-Business
+        </a>
+        <p class="footer-desc">La plateforme de gestion intelligente pour les entreprises algériennes.</p>
+      </div>
+
+      <!-- Links -->
+      <div class="col-6 col-lg-2 offset-lg-2">
+        <div class="footer-heading">Navigation</div>
+        <ul class="footer-links">
+          <li><a href="#home">Accueil</a></li>
+          <li><a href="#features">Fonctionnalités</a></li>
+          <li><a href="#about">À propos</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <div class="footer-heading">Compte</div>
+        <ul class="footer-links">
+          <li><a href="login.php">Connexion</a></li>
+          <li><a href="signup.php">Inscription</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <div class="footer-heading">Légal</div>
+        <ul class="footer-links">
+          <li><a href="#">Confidentialité</a></li>
+          <li><a href="#">Conditions</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="footer-divider" />
+
+    <div class="footer-bottom">
+      <p class="footer-copy mb-0">
+        &copy; 2026 <strong>G-Business</strong>. Fait avec <span>♥</span> en Algérie.
+      </p>
+      <div class="social-links">
+        <a href="#" class="social-btn" title="Facebook" id="socialFacebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="social-btn" title="LinkedIn" id="socialLinkedin"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#" class="social-btn" title="Twitter/X" id="socialTwitter"><i class="fab fa-x-twitter"></i></a>
+        <a href="#" class="social-btn" title="Instagram" id="socialInstagram"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ==================== SCRIPTS ==================== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  /* ---- Navbar scroll effect ---- */
+  const navbar = document.getElementById('mainNavbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 30);
+  });
+
+  /* ---- Active nav link on scroll ---- */
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.4 });
+
+  sections.forEach(s => observer.observe(s));
+
+  /* ---- Scroll-reveal animation ---- */
+  const animatedEls = document.querySelectorAll('.animate-on-scroll');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  animatedEls.forEach(el => revealObserver.observe(el));
+
+  /* ---- Logout button visibility (toggle based on PHP session) ----
+     In production, PHP will echo a class or attribute. Here we handle
+     it via a data attribute injected by PHP on the body tag.
+     Example usage in PHP: <body data-logged-in="1"> */
+  (function () {
+    const loggedIn = document.body.dataset.loggedIn === '1';
+    const btnLogout = document.getElementById('btnLogout');
+    const btnLogin  = document.getElementById('btnLogin');
+    const btnSignup = document.getElementById('btnSignup');
+
+    if (loggedIn) {
+      btnLogout.classList.add('visible');
+      btnLogin.style.display  = 'none';
+      btnSignup.style.display = 'none';
+    }
+  })();
+
+  /* ---- Contact form ---- */
+  document.getElementById('contactForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const btn = document.getElementById('contactSubmitBtn');
+    btn.innerHTML = '<i class="fas fa-check me-2"></i>Message envoyé !';
+    btn.style.background = 'linear-gradient(135deg, #48bb78, #38a169)';
+    btn.style.boxShadow  = '0 8px 25px rgba(72,187,120,0.4)';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Envoyer le message';
+      btn.style.background = '';
+      btn.style.boxShadow  = '';
+      btn.disabled = false;
+      this.reset();
+    }, 3000);
+  });
+
+  /* ---- Smooth close mobile menu on nav-link click ---- */
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      const collapse = document.getElementById('navContent');
+      const bsCollapse = bootstrap.Collapse.getInstance(collapse);
+      if (bsCollapse) bsCollapse.hide();
+    });
+  });
+</script>
+
+</body>
+</html>

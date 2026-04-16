@@ -7,3 +7,8 @@ git checkout -b developpement
 git checkout master
 git merge developpement
 git push origin master
+
+### dans wampserver nom de DB : gestion_business
+dans hostinger : database name : u174726466_g_business
+                 MySQL username : u174726466_g_business
+                 Password : Business@2027
