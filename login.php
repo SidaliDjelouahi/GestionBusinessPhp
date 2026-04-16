@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // --- 1. Try Hostinger ---
         try {
             $pdo = makeConnection(
-                'srv1055.hstgr.io',
+                'localhost',
                 'u174726466_g_business',
                 'u174726466_g_business',
                 'Business@2027'

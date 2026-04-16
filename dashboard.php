@@ -13,7 +13,7 @@ $initials = strtoupper(mb_substr($username, 0, 1));
 $pdo = null;
 try {
     $pdo = new PDO(
-        "mysql:host=srv1055.hstgr.io;dbname=u174726466_g_business;charset=utf8mb4",
+        "mysql:host=localhost;dbname=u174726466_g_business;charset=utf8mb4",
         "u174726466_g_business",
         "Business@2027",
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]

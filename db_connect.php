@@ -5,7 +5,7 @@
 // ============================================================
 
 // === HOSTINGER (PRIMARY) ===
-define('DB_HOST_PRIMARY',   'srv1055.hstgr.io');
+define('DB_HOST_PRIMARY',   'localhost');
 define('DB_NAME_PRIMARY',   'u174726466_g_business');
 define('DB_USER_PRIMARY',   'u174726466_g_business');
 define('DB_PASS_PRIMARY',   'Business@2027');
