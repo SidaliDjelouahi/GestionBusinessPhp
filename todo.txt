@@ -1,9 +1,0 @@
-###astuce pour imprimante thermique :
-Petit conseil d'expert pour votre profil :
-Comme vous gérez déjà des équipements POS (imprimantes thermiques, lecteurs codes-barres), assurez-vous que votre application PHP sur Hostinger possède une API (en JSON). Cela vous permettra, plus tard, d'utiliser une application Windows (que vous pouvez développer en C# dans Antigravity) pour communiquer avec votre site web et envoyer des données vers vos imprimantes locales.
-
-### steps git 
-git checkout -b developpement
-git checkout master
-git merge developpement
-git push origin master
