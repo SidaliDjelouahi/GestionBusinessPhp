@@ -1,6 +1,8 @@
 <?php
 // ─── SESSION & AUTH ────────────────────────────────────────────────────────
 session_start();
+require_once 'db_connect.php';
+
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header('Location: login.php');
     exit;
@@ -10,25 +12,9 @@ $rank     = $_SESSION['rank']     ?? 'user';
 $initials = strtoupper(mb_substr($username, 0, 1));
 
 // ─── DATABASE CONNECTION ───────────────────────────────────────────────────
-$pdo = null;
-try {
-    $pdo = new PDO(
-        "mysql:host=localhost;dbname=u174726466_g_business;charset=utf8mb4",
-        "u174726466_g_business",
-        "Business@2027",
-        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-    );
-} catch (Exception $e) {
-    try {
-        $pdo = new PDO(
-            "mysql:host=localhost;dbname=gestion_business;charset=utf8mb4",
-            "root",
-            "",
-            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-        );
-    } catch (Exception $e2) {
-        die("Connexion impossible aux bases de données.");
-    }
+$pdo = getDBConnection();
+if ($pdo === null) {
+    die("Connexion impossible aux bases de données.");
 }
 
 // ─── HELPER FUNCTION ──────────────────────────────────────────────────────

@@ -4,6 +4,7 @@
 //  Auth: Hostinger DB (primary) → WAMP localhost (fallback)
 // ============================================================
 session_start();
+require_once 'db_connect.php';
 
 // Already logged in? Go straight to dashboard
 if (!empty($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
@@ -13,18 +14,6 @@ if (!empty($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 
 $error   = '';
 $success = false;
-
-// ---- DB helper: returns a PDO connection or throws ----
-function makeConnection(string $host, string $db, string $user, string $pass): PDO
-{
-    $dsn = "mysql:host={$host};dbname={$db};charset=utf8mb4";
-    $options = [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_TIMEOUT            => 5,          // connection timeout (seconds)
-    ];
-    return new PDO($dsn, $user, $pass, $options);
-}
 
 // ---- Process form submission ----
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -37,31 +26,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Veuillez remplir tous les champs.';
     } else {
 
-        $pdo = null;
+        $pdo = getDBConnection();
 
-        // --- 1. Try Hostinger ---
-        try {
-            $pdo = makeConnection(
-                'localhost',
-                'u174726466_g_business',
-                'u174726466_g_business',
-                'Business@2027'
-            );
-        } catch (PDOException $e) {
-            // Hostinger unreachable → try localhost
-            $pdo = null;
-        }
-
-        // --- 2. Fallback to WAMP localhost ---
         if ($pdo === null) {
-            try {
-                $pdo = makeConnection('localhost', 'gestion_business', 'root', '');
-            } catch (PDOException $e) {
-                $error = 'Impossible de se connecter à la base de données. Veuillez réessayer plus tard.';
-            }
+            $error = 'Impossible de se connecter à la base de données. Veuillez réessayer plus tard.';
         }
 
-        // --- 3. Query users table ---
+        // --- Query users table ---
         if ($pdo !== null && $error === '') {
             try {
                 $stmt = $pdo->prepare(
