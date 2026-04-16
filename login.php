@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // --- 1. Try Hostinger ---
         try {
             $pdo = makeConnection(
-                '153.92.15.14',
+                'srv1055.hstgr.io',
                 'u174726466_g_business',
                 'u174726466_g_business',
                 'Business@2027'
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($pdo !== null && $error === '') {
             try {
                 $stmt = $pdo->prepare(
-                    "SELECT * FROM users WHERE username = :username LIMIT 1"
+                    "SELECT * FROM utilisateurs WHERE nom = :username LIMIT 1"
                 );
                 $stmt->execute([':username' => $username]);
                 $user = $stmt->fetch();
@@ -91,7 +91,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         session_regenerate_id(true);
 
                         $_SESSION['logged_in'] = true;
-                        $_SESSION['username']  = htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8');
+                        $_SESSION['username']  = htmlspecialchars($user['nom'],      ENT_QUOTES, 'UTF-8');
+                        $_SESSION['rank']      = htmlspecialchars($user['rank']  ?? 'user', ENT_QUOTES, 'UTF-8');
                         $_SESSION['user_id']   = $user['id'] ?? null;
                         $_SESSION['user']      = $user;
 
