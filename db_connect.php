@@ -4,17 +4,23 @@
 //  Centralized Database Connection Logic
 // ============================================================
 
-// === HOSTINGER (PRIMARY) ===
-define('DB_HOST_PRIMARY',   'localhost');
-define('DB_NAME_PRIMARY',   'u174726466_g_business');
-define('DB_USER_PRIMARY',   'u174726466_g_business');
-define('DB_PASS_PRIMARY',   'Business@2027');
+// === HOSTINGER (PRODUCTION) ===
+define('DB_HOST_PROD',   'localhost');
+define('DB_NAME_PROD',   'u174726466_g_business');
+define('DB_USER_PROD',   'u174726466_g_business');
+define('DB_PASS_PROD',   'Business@2027');
+
+// === HOSTINGER (DEVELOPMENT / TEST) ===
+define('DB_HOST_DEV',    'localhost');
+define('DB_NAME_DEV',    'u174726466_g_bus_dev');
+define('DB_USER_DEV',    'u174726466_g_bus_dev');
+define('DB_PASS_DEV',    'BusDev@2027');
 
 // === WAMP LOCALHOST (FALLBACK) ===
-define('DB_HOST_FALLBACK',  'localhost');
-define('DB_NAME_FALLBACK',  'gestion_business');
-define('DB_USER_FALLBACK',  'root');
-define('DB_PASS_FALLBACK',  '');
+define('DB_HOST_LOCAL',  'localhost');
+define('DB_NAME_LOCAL',  'gestion_business');
+define('DB_USER_LOCAL',  'root');
+define('DB_PASS_LOCAL',  '');
 
 function makeConnection(string $host, string $db, string $user, string $pass): PDO
 {
@@ -22,43 +28,36 @@ function makeConnection(string $host, string $db, string $user, string $pass): P
     $options = [
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_TIMEOUT            => 5,
+        PDO::ATTR_TIMEOUT            => 3, // Réduit pour basculer plus vite si échec
     ];
     return new PDO($dsn, $user, $pass, $options);
 }
 
 function getDBConnection(): ?PDO
 {
-    // --- Try Hostinger first ---
-    try {
-        $pdo = makeConnection(
-            DB_HOST_PRIMARY,
-            DB_NAME_PRIMARY,
-            DB_USER_PRIMARY,
-            DB_PASS_PRIMARY
-        );
-        if (!defined('DB_ACTIVE')) {
-            define('DB_ACTIVE', 'hostinger');
-        }
-        return $pdo;
-    } catch (PDOException $e) {
-        // Hostinger unreachable, try fallback
-    }
+    // 1. Détection de l'environnement par l'URL
+    $isDevServer = (isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'], 'dev') !== false);
 
-    // --- Fallback: WAMP localhost ---
     try {
-        $pdo = makeConnection(
-            DB_HOST_FALLBACK,
-            DB_NAME_FALLBACK,
-            DB_USER_FALLBACK,
-            DB_PASS_FALLBACK
-        );
-        if (!defined('DB_ACTIVE')) {
-            define('DB_ACTIVE', 'localhost');
+        if ($isDevServer) {
+            // --- Tentative connexion Base DEV ---
+            $pdo = makeConnection(DB_HOST_DEV, DB_NAME_DEV, DB_USER_DEV, DB_PASS_DEV);
+            if (!defined('DB_ENVIRONMENT')) define('DB_ENVIRONMENT', 'hostinger_dev');
+            return $pdo;
+        } else {
+            // --- Tentative connexion Base PROD ---
+            $pdo = makeConnection(DB_HOST_PROD, DB_NAME_PROD, DB_USER_PROD, DB_PASS_PROD);
+            if (!defined('DB_ENVIRONMENT')) define('DB_ENVIRONMENT', 'hostinger_prod');
+            return $pdo;
         }
-        return $pdo;
     } catch (PDOException $e) {
-        // Both failed
-        return null;
+        // En cas d'échec sur Hostinger, on tente le fallback Local (WAMP)
+        try {
+            $pdo = makeConnection(DB_HOST_LOCAL, DB_NAME_LOCAL, DB_USER_LOCAL, DB_PASS_LOCAL);
+            if (!defined('DB_ENVIRONMENT')) define('DB_ENVIRONMENT', 'localhost');
+            return $pdo;
+        } catch (PDOException $e2) {
+            return null;
+        }
     }
 }

@@ -12,3 +12,59 @@ git push origin master
 dans hostinger : database name : u174726466_g_business
                  MySQL username : u174726466_g_business
                  Password : Business@2027
+                 domaine : genytechdz.com
+
+### pour le test
+dans hostinger : database name : u174726466_g_bus_dev
+                 MySQL username : u174726466_g_bus_dev
+                 Password : BusDev@2027
+                 domaine : dev.genytechdz.com
+
+#### Résumé de la stratégie idéale pour essayer la seconde branche en ligne: 
+Voici un résumé complet et structuré de votre nouvelle architecture de déploiement. 
+Ce document vous servira de référence pour synchroniser vos futurs échanges avec l'IA 
+ou pour documenter votre projet.
+---
+# 🚀 Résumé Technique : G-Business (Architecture de Déploiement)
+## 1. Stratégie Multi-Environnements
+L'application utilise désormais trois environnements distincts pour sécuriser le cycle 
+de développement :
+* **Local (WAMP/XAMPP)** : Pour le codage initial.
+* **Développement (En ligne)** : Sous-domaine `dev.genytechdz.com` pour tester les 
+branches Git secondaires en conditions réelles.
+* **Production (En ligne)** : Domaine principal `genytechdz.com` pour l'utilisation 
+finale (branche `master`).
+## 2. Configuration de la Base de Données
+Le fichier `db_connect.php` a été automatisé pour détecter l'environnement via l'URL (`HTTP_HOST`).
+| Environnement | URL / Contexte | Base de Données (Hostinger) | Utilisateur |
+| :--- | :--- | :--- | :--- |
+| **Production** | `genytechdz.com` | `u174726466_g_business` | `u174726466_g_business` |
+| **Test (Dev)** | `dev.genytechdz.com` | `u174726466_g_bus_dev` | `u174726466_g_bus_dev` |
+| **Local** | `localhost` | `gestion_business` | `root` |
+## 3. Workflow Git & Déploiement Hostinger
+L'automatisation repose sur deux déploiements Git distincts configurés dans le panel Hostinger :
+### Flux de Développement :
+1.  **Action** : `git push origin developpement` (ou votre branche secondaire).
+2.  **Cible Hostinger** : Configuré pour extraire la branche `developpement` vers le 
+dossier `/public_html/dev/`.
+3.  **Validation** : Vous testez sur `dev.genytechdz.com`. Si une erreur survient, 
+la base de données de production n'est pas affectée.
+
+### Flux de Production :
+1.  **Action** : `git merge developpement` dans la branche `master`, puis `git push origin master`.
+2.  **Cible Hostinger** : Configuré pour extraire la branche `master` vers le dossier 
+racine `/public_html/`.
+3.  **Résultat** : Les modifications validées passent en direct pour les utilisateurs finaux.
+
+## 4. Points de vigilance (Checklist)
+* **Structure SQL** : Toute modification de structure (ALTER TABLE, CREATE TABLE) effectuée 
+en local doit être appliquée manuellement sur la base `_dev` puis sur la base de production 
+via phpMyAdmin.
+* **Webhooks** : S'assurer que le Webhook GitHub est configuré pour chaque déploiement 
+(Prod et Dev) afin que la mise à jour soit instantanée après le `push`.
+* **Sécurité** : Le mot de passe de la base de test (`BusDev@2027`) est désormais centralisé
+ dans `db_connect.php`.
+
+---
+**Statut actuel :** L'infrastructure de test est prête. Le prochain développement pourra 
+se concentrer sur les fonctionnalités du Dashboard en utilisant ce flux sécurisé.
