@@ -77,7 +77,28 @@ try {
         $stmt->execute([$num, $date_achat_clean, $id_fournisseur, $versement, $edit_id]);
         $achat_id = $edit_id;
     } else {
-        // Insert new achat
+        // Vérifier si le numéro de bon existe déjà pour éviter les doublons
+        $stmtCheck = $pdo->prepare("SELECT num FROM achats WHERE num = ?");
+        $stmtCheck->execute([$num]);
+        if ($stmtCheck->fetch()) {
+            // Le numéro existe : récupérer le dernier numéro de la table
+            $stmtLast = $pdo->query("SELECT num FROM achats ORDER BY id DESC LIMIT 1");
+            $lastRow = $stmtLast->fetch(PDO::FETCH_ASSOC);
+            if ($lastRow && $lastRow['num']) {
+                $dernier_num = $lastRow['num'];
+                // Gérer l'incrémentation si le numéro contient des lettres (ex: ACH-20240419-001)
+                if (preg_match('/^(.*?)(\d+)$/', $dernier_num, $matches)) {
+                    $prefix = $matches[1];
+                    $number = (int)$matches[2];
+                    $pad_len = strlen($matches[2]);
+                    $num = $prefix . str_pad($number + 1, $pad_len, '0', STR_PAD_LEFT);
+                } else {
+                    $num = $dernier_num . '-1';
+                }
+            }
+        }
+
+        // Insert new achat avec le numéro mis à jour si nécessaire
         $stmt = $pdo->prepare("INSERT INTO achats (num, date, id_fournisseur, versement) VALUES (?, ?, ?, ?)");
         $stmt->execute([$num, $date_achat_clean, $id_fournisseur, $versement]);
         $achat_id = (int)$pdo->lastInsertId();
