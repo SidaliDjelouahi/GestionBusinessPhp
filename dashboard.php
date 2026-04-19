@@ -948,7 +948,7 @@ $doughnut_data_json     = json_encode(array_map(fn($r) => (float)$r['total'], $t
 
         <?php if ($rank === 'admin'): ?>
         <div class="nav-item">
-            <a href="users.php" class="nav-link-item" data-label="Utilisateurs" id="nav-users">
+            <a href="utilisateurs.php" class="nav-link-item" data-label="Utilisateurs" id="nav-users">
                 <i class="fa-solid fa-users-gear nav-icon"></i>
                 <span class="nav-text">Utilisateurs</span>
                 <span class="nav-badge">Admin</span>
@@ -966,14 +966,14 @@ $doughnut_data_json     = json_encode(array_map(fn($r) => (float)$r['total'], $t
         <div class="nav-section-label">Transactions</div>
 
         <div class="nav-item">
-            <a href="purchases.php" class="nav-link-item" data-label="Achats" id="nav-purchases">
+            <a href="achats/achats.php" class="nav-link-item" data-label="Achats" id="nav-achats">
                 <i class="fa-solid fa-cart-shopping nav-icon"></i>
                 <span class="nav-text">Achats</span>
             </a>
         </div>
 
         <div class="nav-item">
-            <a href="sales.php" class="nav-link-item" data-label="Ventes" id="nav-sales">
+            <a href="ventes/ventes.php" class="nav-link-item" data-label="Ventes" id="nav-ventes">
                 <i class="fa-solid fa-money-bill-wave nav-icon"></i>
                 <span class="nav-text">Ventes</span>
             </a>
@@ -989,7 +989,7 @@ $doughnut_data_json     = json_encode(array_map(fn($r) => (float)$r['total'], $t
         </div>
 
         <div class="nav-item">
-            <a href="suppliers.php" class="nav-link-item" data-label="Fournisseurs" id="nav-suppliers">
+            <a href="fournisseurs.php" class="nav-link-item" data-label="Fournisseurs" id="nav-fournisseurs">
                 <i class="fa-solid fa-industry nav-icon"></i>
                 <span class="nav-text">Fournisseurs</span>
             </a>
@@ -1066,7 +1066,7 @@ $doughnut_data_json     = json_encode(array_map(fn($r) => (float)$r['total'], $t
                     Données en temps réel depuis la base de données
                 </p>
             </div>
-            <a href="sales.php" class="btn btn-sm" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:10px;padding:9px 18px;font-weight:600;font-size:13px;display:flex;align-items:center;gap:7px;box-shadow:0 4px 14px rgba(99,102,241,0.35);">
+            <a href="ventes/bonVente.php" class="btn btn-sm" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:10px;padding:9px 18px;font-weight:600;font-size:13px;display:flex;align-items:center;gap:7px;box-shadow:0 4px 14px rgba(99,102,241,0.35);">
                 <i class="fa-solid fa-plus"></i> Nouvelle Vente
             </a>
         </div>
@@ -1150,7 +1150,7 @@ $doughnut_data_json     = json_encode(array_map(fn($r) => (float)$r['total'], $t
                         Évolution Ventes & Achats
                         <span style="font-size:11px;font-weight:400;color:var(--text-muted);margin-left:4px;">— 6 derniers mois</span>
                     </div>
-                    <a href="sales.php" class="view-all-btn">
+                    <a href="ventes/ventes.php" class="view-all-btn">
                         Voir tout <i class="fa-solid fa-arrow-right"></i>
                     </a>
                 </div>
@@ -1209,7 +1209,7 @@ $doughnut_data_json     = json_encode(array_map(fn($r) => (float)$r['total'], $t
                         <i class="fa-solid fa-clock-rotate-left"></i>
                         Ventes Récentes
                     </div>
-                    <a href="sales.php" class="view-all-btn">
+                    <a href="ventes/ventes.php" class="view-all-btn">
                         Voir tout <i class="fa-solid fa-arrow-right"></i>
                     </a>
                 </div>
