@@ -1211,10 +1211,12 @@ document.getElementById('bonAchatForm').addEventListener('submit', function(e) {
     errSearch.style.display = 'none';
 
     const rows = document.getElementById('detailLines').querySelectorAll('tr');
+    const fournisseurValeur = document.getElementById('selectFournisseur').value;
+    const versementValeur = parseFloat(document.getElementById('versementInput').value || 0);
 
-    if (rows.length === 0) {
+    if (rows.length === 0 && (fournisseurValeur === '' || versementValeur <= 0)) {
         e.preventDefault();
-        errSearch.textContent = 'Veuillez ajouter au moins un produit.';
+        errSearch.textContent = 'Pour valider un bon sans produits, vous devez obligatoirement sélectionner un fournisseur ET saisir un versement.';
         errSearch.style.display = 'block';
         return;
     }

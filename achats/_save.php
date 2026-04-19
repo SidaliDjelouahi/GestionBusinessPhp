@@ -47,7 +47,11 @@ foreach ($detail_produit as $i => $pid) {
 }
 
 if (empty($valid_lines)) {
-    header('Location: bonAchat.php' . ($edit_id ? '?id=' . $edit_id . '&' : '?') . 'error=' . urlencode('Aucune ligne de produit valide.')); exit;
+    if (empty($id_fournisseur) || $versement <= 0) {
+        $msg = 'Pour valider un bon sans produits, vous devez obligatoirement sélectionner un fournisseur ET saisir un versement.';
+        header('Location: bonAchat.php' . ($edit_id ? '?id=' . $edit_id . '&' : '?') . 'error=' . urlencode($msg)); 
+        exit;
+    }
 }
 
 // Validate date
