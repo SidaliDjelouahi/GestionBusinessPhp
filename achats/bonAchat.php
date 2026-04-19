@@ -301,6 +301,9 @@ if (isset($_GET['error'])) {
             border-radius: var(--radius); box-shadow: var(--shadow-sm);
             overflow: hidden;
         }
+        .section-card.search-card {
+            overflow: visible;
+        }
         .section-card-header {
             display: flex; align-items: center; justify-content: space-between;
             padding: 16px 20px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 8px;
@@ -371,7 +374,7 @@ if (isset($_GET['error'])) {
         .pos-right  { width: 340px; flex-shrink: 0; }
 
         /* PRODUCT SEARCH */
-        .prod-search-wrap { position: relative; }
+        .prod-search-wrap { position: relative; z-index: 501; flex: 1; min-width: 200px; }
         .prod-search-input {
             width: 100%; padding: 10px 14px;
             border: 2px solid var(--border-color); border-radius: var(--radius-sm);
@@ -387,7 +390,7 @@ if (isset($_GET['error'])) {
             position: absolute; top: calc(100% + 4px); left: 0; right: 0;
             background: var(--card-bg); border: 1px solid var(--border-color);
             border-radius: var(--radius-sm); box-shadow: var(--shadow-lg);
-            z-index: 9999; max-height: 280px; overflow-y: auto; display: none;
+            z-index: 502; max-height: 280px; overflow-y: auto; display: none;
         }
         .prod-dropdown.open { display: block; }
         .prod-drop-item {
@@ -419,7 +422,14 @@ if (isset($_GET['error'])) {
         .btn-entrer:hover { background: #1d4ed8; }
 
         /* SEARCH CONTROLS ROW */
-        .search-controls { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 16px; flex-wrap: wrap; }
+        .search-controls {
+            display: flex; gap: 8px; align-items: flex-end;
+            margin-bottom: 0; flex-wrap: wrap;
+            position: sticky; top: 64px; z-index: 500;
+            background: var(--card-bg);
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
         .search-controls .prod-search-wrap { flex: 1; min-width: 200px; }
 
         /* QTY CONTROL */
@@ -531,6 +541,7 @@ if (isset($_GET['error'])) {
         [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
 
         @keyframes spin { to { transform: rotate(360deg); } }
+        html { scroll-padding-top: calc(var(--topbar-h) + 80px); }
     </style>
 </head>
 <body>
@@ -673,13 +684,13 @@ if (isset($_GET['error'])) {
                 <div class="pos-left">
 
                     <!-- SEARCH CONTROLS -->
-                    <div class="section-card" style="margin-bottom:20px;">
+                    <div class="section-card search-card" style="margin-bottom:20px;">
                         <div class="section-card-header">
                             <div class="section-card-title">
                                 <i class="fa-solid fa-magnifying-glass"></i> Rechercher un produit
                             </div>
                         </div>
-                        <div style="padding:16px 20px;">
+                        <div>
                             <div class="search-controls">
                                 <div class="prod-search-wrap" style="flex:1;min-width:200px;">
                                     <input type="text" id="prodSearch" class="prod-search-input"
@@ -746,8 +757,8 @@ if (isset($_GET['error'])) {
                     <!-- FOURNISSEUR SELECT -->
                     <div class="section-card" style="margin-bottom:16px;">
                         <div style="padding:16px;">
-                            <label class="form-label-custom" for="selectFournisseur">Fournisseur *</label>
-                            <select name="id_fournisseur" id="selectFournisseur" class="form-control-custom" required>
+                            <label class="form-label-custom" for="selectFournisseur">Fournisseur <span style="font-size:10px;color:var(--text-muted);">(optionnel)</span></label>
+                            <select name="id_fournisseur" id="selectFournisseur" class="form-control-custom">
                                 <option value="">-- Sélectionner un fournisseur --</option>
                                 <?php foreach ($all_fournisseurs as $f): ?>
                                     <option value="<?= (int)$f['id'] ?>"
@@ -883,15 +894,27 @@ const prixInput   = document.getElementById('prixInput');
 let   searchDebounce = null;
 let   highlightedIdx = -1;
 let   dropdownItems  = [];
+let   selectedProduct = null;  // product selected by mouse click, waiting for Valider
 
+// keydown gère navigation + Enter + Escape (preventDefault empêche comportements par défaut)
+prodSearch.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); navigateDrop(1); return; }
+    if (e.key === 'ArrowUp')   { e.preventDefault(); navigateDrop(-1); return; }
+    if (e.key === 'Enter')     { e.preventDefault(); enterHighlighted(); return; }
+    if (e.key === 'Escape')    { e.preventDefault(); closeDrop(); return; }
+});
+
+// keyup gère la recherche texte uniquement
 prodSearch.addEventListener('keyup', (e) => {
-    if (e.key === 'ArrowDown') { navigateDrop(1); return; }
-    if (e.key === 'ArrowUp')   { navigateDrop(-1); return; }
-    if (e.key === 'Enter')     { enterHighlighted(); return; }
-    if (e.key === 'Escape')    { closeDrop(); return; }
+    if (['ArrowDown','ArrowUp','Enter','Escape'].includes(e.key)) return;
     clearTimeout(searchDebounce);
     const q = prodSearch.value.trim();
-    if (q.length < 1) { closeDrop(); return; }
+    if (q.length < 1) {
+        closeDrop();
+        selectedProduct = null;
+        prixInput.value = '';
+        return;
+    }
     searchDebounce = setTimeout(() => doSearch(q), 250);
 });
 
@@ -903,35 +926,56 @@ function doSearch(q) {
 }
 
 function renderDrop(items) {
-    dropdownItems = items;
+    dropdownItems  = items;
     highlightedIdx = -1;
-    if (!items || items.length === 0) { prodDropdown.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:var(--text-muted);">Aucun résultat</div>'; prodDropdown.classList.add('open'); return; }
+
+    if (!items || items.length === 0) {
+        prodDropdown.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:var(--text-muted);">Aucun résultat</div>';
+        prodDropdown.classList.add('open');
+        return;
+    }
+
     prodDropdown.innerHTML = items.map((p, i) => {
         const qte = parseFloat(p.qte || 0);
         let cls = 'stock-ok', badgeCls = 'badge-en-stock', badgeLabel = 'En stock';
-        if (qte <= 0) { cls = 'stock-empty'; badgeCls = 'badge-rupture'; badgeLabel = 'Rupture'; }
-        else if (qte <= 10) { cls = 'stock-low'; badgeCls = 'badge-faible'; badgeLabel = 'Faible'; }
-        return `<div class="prod-drop-item ${cls}" data-idx="${i}">
+        if (qte <= 0)  { cls = 'stock-empty'; badgeCls = 'badge-rupture'; badgeLabel = 'Rupture'; }
+        else if (qte <= 10) { cls = 'stock-low';   badgeCls = 'badge-faible';   badgeLabel = 'Faible';   }
+        return `<div class="prod-drop-item ${cls}" data-idx="${i}" title="Clic: sélectionner | Entrée: ajouter directement">
             <span class="prod-drop-name">${escHtml(p.nom)}</span>
-            <span class="prod-drop-meta">${fmtNum(p.prix_achat)} DA&nbsp;&nbsp;|&nbsp;&nbsp;vente: ${fmtNum(p.prix_vente)} DA&nbsp;&nbsp;|&nbsp;&nbsp;${fmtQte(qte)} u.</span>
+            <span class="prod-drop-meta">
+                ${fmtNum(p.prix_achat)} DA&nbsp;&nbsp;|&nbsp;&nbsp;vente: ${fmtNum(p.prix_vente)} DA&nbsp;&nbsp;|&nbsp;&nbsp;${fmtQte(qte)} u.
+            </span>
             <span class="prod-drop-badge ${badgeCls}">${badgeLabel}</span>
-            <button type="button" class="btn-entrer" data-idx="${i}">Entrer</button>
         </div>`;
     }).join('');
+
     prodDropdown.classList.add('open');
 
-    prodDropdown.querySelectorAll('.btn-entrer').forEach(btn => {
-        btn.addEventListener('click', e => {
-            e.stopPropagation();
-            const item = dropdownItems[parseInt(btn.dataset.idx)];
-            if (item) addProductToTable(item.id, item.nom, item.prix_achat, qtyInput.value || 1);
-        });
-    });
+    // ── MOUSE CLICK on item row → fills search bar + focuses qty (Mode 2) ──
     prodDropdown.querySelectorAll('.prod-drop-item').forEach(el => {
-        el.addEventListener('click', (e) => {
-            if (e.target.classList.contains('btn-entrer')) return;
+        el.addEventListener('mousedown', (e) => {
+            // Use mousedown (before blur fires) to capture the click
+            e.preventDefault(); // prevent prodSearch from losing focus prematurely
             const item = dropdownItems[parseInt(el.dataset.idx)];
-            if (item) addProductToTable(item.id, item.nom, item.prix_achat, qtyInput.value || 1);
+            if (!item) return;
+
+            // Fill the search bar with product name
+            prodSearch.value = item.nom;
+
+            // Fill prix input with product's purchase price
+            prixInput.value = parseFloat(item.prix_achat).toFixed(2);
+
+            // Store selected product for Valider button
+            selectedProduct = item;
+
+            // Close dropdown
+            closeDrop();
+
+            // Focus on qty input so user can adjust before clicking Valider
+            setTimeout(() => {
+                qtyInput.focus();
+                qtyInput.select(); // select all for easy overwrite
+            }, 30);
         });
     });
 }
@@ -940,17 +984,42 @@ function navigateDrop(dir) {
     const els = prodDropdown.querySelectorAll('.prod-drop-item');
     if (!els.length) return;
     els.forEach(e => e.classList.remove('highlighted'));
-    highlightedIdx = Math.max(0, Math.min(els.length - 1, highlightedIdx + dir));
+    // Si rien sélectionné et on va vers le bas → commencer à 0
+    // Si rien sélectionné et on va vers le haut → commencer au dernier
+    if (highlightedIdx === -1) {
+        highlightedIdx = dir > 0 ? 0 : els.length - 1;
+    } else {
+        highlightedIdx = Math.max(0, Math.min(els.length - 1, highlightedIdx + dir));
+    }
     els[highlightedIdx].classList.add('highlighted');
+    els[highlightedIdx].scrollIntoView({ block: 'nearest' }); // scroll si liste longue
     if (dropdownItems[highlightedIdx]) {
         prixInput.value = dropdownItems[highlightedIdx].prix_achat;
     }
 }
 
 function enterHighlighted() {
+    // Si un item est mis en surbrillance au clavier → l'ajouter directement
     if (highlightedIdx >= 0 && dropdownItems[highlightedIdx]) {
         const p = dropdownItems[highlightedIdx];
-        addProductToTable(p.id, p.nom, p.prix_achat, qtyInput.value || 1);
+        addProductToTable(
+            p.id,
+            p.nom,
+            prixInput.value || p.prix_achat,
+            qtyInput.value || 1
+        );
+        selectedProduct = null;
+        return;
+    }
+    // Si un produit a été sélectionné à la souris → l'ajouter aussi
+    if (selectedProduct) {
+        addProductToTable(
+            selectedProduct.id,
+            selectedProduct.nom,
+            prixInput.value || selectedProduct.prix_achat,
+            qtyInput.value || 1
+        );
+        selectedProduct = null;
     }
 }
 
@@ -965,7 +1034,28 @@ document.addEventListener('click', (e) => {
     if (!prodDropdown.contains(e.target) && e.target !== prodSearch) closeDrop();
 });
 
-document.getElementById('btnValiderProduit').addEventListener('click', () => { enterHighlighted(); });
+document.getElementById('btnValiderProduit').addEventListener('click', () => {
+    if (selectedProduct) {
+        // Product was selected by mouse click — add with current qty/prix
+        addProductToTable(
+            selectedProduct.id,
+            selectedProduct.nom,
+            prixInput.value || selectedProduct.prix_achat,
+            qtyInput.value || 1
+        );
+        selectedProduct = null;
+    } else {
+        // Product was highlighted by keyboard — add directly
+        enterHighlighted();
+    }
+});
+
+qtyInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('btnValiderProduit').click();
+    }
+});
 
 /* ── ADD PRODUCT TO TABLE ── */
 function addProductToTable(id, nom, prix, qte) {
@@ -1011,6 +1101,7 @@ function addProductToTable(id, nom, prix, qte) {
     prodSearch.value = '';
     prixInput.value  = '';
     qtyInput.value   = '1';
+    setTimeout(() => prodSearch.focus(), 50);
 }
 
 function changeQty(btn, delta) {
@@ -1046,7 +1137,11 @@ function calcTotals() {
         if (totCell) totCell.textContent = fmtNum(line) + ' DA';
     });
 
-    const versement = parseFloat(document.getElementById('versementInput').value || 0);
+    const versementEl = document.getElementById('versementInput');
+    if (!versementEl.dataset.manualEdit) {
+        versementEl.value = total > 0 ? total.toFixed(2) : '0';
+    }
+    const versement = parseFloat(versementEl.value || 0);
     const reste     = Math.max(0, total - versement);
 
     document.getElementById('ticketArticles').textContent = count + ' produit' + (count > 1 ? 's' : '');
@@ -1073,7 +1168,17 @@ function calcTotals() {
     }
 }
 
-document.getElementById('versementInput').addEventListener('input', calcTotals);
+document.getElementById('versementInput').addEventListener('input', function() {
+    this.dataset.manualEdit = 'true';
+    calcTotals();
+});
+
+document.getElementById('versementInput').addEventListener('blur', function() {
+    if (this.value === '' || parseFloat(this.value) === 0) {
+        delete this.dataset.manualEdit;
+        calcTotals();
+    }
+});
 
 /* ── PRE-FILL EDIT MODE ── */
 <?php if ($edit_details): ?>
@@ -1105,16 +1210,8 @@ document.getElementById('bonAchatForm').addEventListener('submit', function(e) {
     errPanel.style.display = 'none';
     errSearch.style.display = 'none';
 
-    const fournisseur = document.getElementById('selectFournisseur').value;
     const rows = document.getElementById('detailLines').querySelectorAll('tr');
 
-    if (!fournisseur) {
-        e.preventDefault();
-        errPanel.textContent = 'Veuillez sélectionner un fournisseur.';
-        errPanel.style.display = 'block';
-        document.getElementById('selectFournisseur').focus();
-        return;
-    }
     if (rows.length === 0) {
         e.preventDefault();
         errSearch.textContent = 'Veuillez ajouter au moins un produit.';

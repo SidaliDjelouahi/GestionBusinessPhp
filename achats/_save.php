@@ -21,7 +21,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // ─── INPUTS ─────────────────────────────────────────────────────────────────
 $num           = trim($_POST['num']           ?? '');
 $date_achat    = trim($_POST['date_achat']    ?? date('Y-m-d H:i:s'));
-$id_fournisseur = trim($_POST['id_fournisseur'] ?? '');
+$id_fournisseur = isset($_POST['id_fournisseur'])
+    && is_numeric($_POST['id_fournisseur'])
+    && (int)$_POST['id_fournisseur'] > 0
+    ? (int)$_POST['id_fournisseur'] : null;
+// fournisseur is optional — null is accepted
 $versement     = floatval($_POST['versement'] ?? 0);
 $edit_id       = isset($_POST['edit_id']) && is_numeric($_POST['edit_id']) ? (int)$_POST['edit_id'] : null;
 
@@ -30,9 +34,7 @@ $detail_qte     = $_POST['detail_qte']     ?? [];
 $detail_prix    = $_POST['detail_prix']    ?? [];
 
 // ─── VALIDATION ─────────────────────────────────────────────────────────────
-if (!$id_fournisseur || !is_numeric($id_fournisseur)) {
-    header('Location: bonAchat.php' . ($edit_id ? '?id=' . $edit_id . '&' : '?') . 'error=' . urlencode('Fournisseur invalide ou manquant.')); exit;
-}
+
 
 $valid_lines = [];
 foreach ($detail_produit as $i => $pid) {
@@ -72,12 +74,12 @@ try {
         $stmt->execute([$edit_id]);
         // Update achat header
         $stmt = $pdo->prepare("UPDATE achats SET num = ?, date = ?, id_fournisseur = ?, versement = ? WHERE id = ?");
-        $stmt->execute([$num, $date_achat_clean, (int)$id_fournisseur, $versement, $edit_id]);
+        $stmt->execute([$num, $date_achat_clean, $id_fournisseur, $versement, $edit_id]);
         $achat_id = $edit_id;
     } else {
         // Insert new achat
         $stmt = $pdo->prepare("INSERT INTO achats (num, date, id_fournisseur, versement) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$num, $date_achat_clean, (int)$id_fournisseur, $versement]);
+        $stmt->execute([$num, $date_achat_clean, $id_fournisseur, $versement]);
         $achat_id = (int)$pdo->lastInsertId();
     }
 
