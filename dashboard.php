@@ -994,6 +994,18 @@ $doughnut_data_json     = json_encode(array_map(fn($r) => (float)$r['total'], $t
                 <span class="nav-text">Fournisseurs</span>
             </a>
         </div>
+
+        <?php if ($rank === 'admin'): ?>
+        <div class="nav-section-label">Comptabilité</div>
+
+        <div class="nav-item">
+            <a href="analyse/caisse.php" class="nav-link-item" data-label="Analyse" id="nav-analyse">
+                <i class="fa-solid fa-calculator nav-icon"></i>
+                <span class="nav-text">Analyse</span>
+                <span class="nav-badge">Admin</span>
+            </a>
+        </div>
+        <?php endif; ?>
     </nav>
 
     <!-- User block -->

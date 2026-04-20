@@ -76,3 +76,6 @@ CREATE TABLE vente_details (
     FOREIGN KEY (id_vente) REFERENCES ventes(id) ON DELETE CASCADE,
     FOREIGN KEY (id_produit) REFERENCES produits(id)
 ) ENGINE=InnoDB;
+
+ALTER TABLE produits 
+ADD COLUMN code VARCHAR(255) AFTER id;
