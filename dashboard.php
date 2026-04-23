@@ -216,6 +216,10 @@ $doughnut_data_json     = json_encode(array_map(fn($r) => (float)$r['total'], $t
             --shadow-lg:     0 10px 25px rgba(0,0,0,0.50);
         }
 
+        .stats-grid-user {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+
         /* ══════════════════════════════════════════
            RESET & BASE
         ══════════════════════════════════════════ */
@@ -1084,9 +1088,10 @@ $doughnut_data_json     = json_encode(array_map(fn($r) => (float)$r['total'], $t
         </div>
 
         <!-- STATS CARDS -->
-        <div class="stats-grid">
+        <div class="stats-grid<?= $rank !== 'admin' ? ' stats-grid-user' : '' ?>">
 
-            <!-- Card 1: Total Ventes -->
+            <?php if ($rank === 'admin'): ?>
+            <!-- Card 1: Total Ventes (admin only) -->
             <div class="stat-card blue animate-in">
                 <div class="stat-card-header">
                     <div class="stat-icon"><i class="fa-solid fa-chart-line"></i></div>
@@ -1102,7 +1107,7 @@ $doughnut_data_json     = json_encode(array_map(fn($r) => (float)$r['total'], $t
                 </div>
             </div>
 
-            <!-- Card 2: Total Achats -->
+            <!-- Card 2: Total Achats (admin only) -->
             <div class="stat-card purple animate-in">
                 <div class="stat-card-header">
                     <div class="stat-icon"><i class="fa-solid fa-cart-shopping"></i></div>
@@ -1117,6 +1122,7 @@ $doughnut_data_json     = json_encode(array_map(fn($r) => (float)$r['total'], $t
                     <span><?= number_format($nb_achats) ?> achat<?= $nb_achats > 1 ? 's' : '' ?> enregistré<?= $nb_achats > 1 ? 's' : '' ?></span>
                 </div>
             </div>
+            <?php endif; ?>
 
             <!-- Card 3: Total Clients -->
             <div class="stat-card green animate-in">

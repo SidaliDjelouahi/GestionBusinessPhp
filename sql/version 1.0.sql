@@ -77,5 +77,15 @@ CREATE TABLE vente_details (
     FOREIGN KEY (id_produit) REFERENCES produits(id)
 ) ENGINE=InnoDB;
 
+--9. Add code column to produits table
 ALTER TABLE produits 
 ADD COLUMN code VARCHAR(255) AFTER id;
+
+-- 10. Table Produits Gros
+CREATE TABLE produits_gros (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    qte DECIMAL(10, 3) DEFAULT 0.000,
+    prix_achat DECIMAL(10, 2),
+    prix_vente DECIMAL(10, 2)
+) ENGINE=InnoDB;

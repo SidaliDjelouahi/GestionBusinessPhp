@@ -70,8 +70,8 @@ $search = trim($_GET['search'] ?? '');
 $produits = [];
 try {
     if ($search !== '') {
-        $stmt = $pdo->prepare("SELECT * FROM produits WHERE nom LIKE ? ORDER BY id DESC");
-        $stmt->execute(['%' . $search . '%']);
+        $stmt = $pdo->prepare("SELECT * FROM produits WHERE nom LIKE ? OR code LIKE ? ORDER BY id DESC");
+        $stmt->execute(['%' . $search . '%', '%' . $search . '%']);
     } else {
         $stmt = $pdo->query("SELECT * FROM produits ORDER BY id DESC");
     }
@@ -568,7 +568,7 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
         <div class="nav-section-label">Transactions</div>
 
         <div class="nav-item">
-            <a href="purchases.php" class="nav-link-item" data-label="Achats" id="nav-purchases">
+            <a href="achats/achats.php" class="nav-link-item" data-label="Achats" id="nav-purchases">
                 <i class="fa-solid fa-cart-shopping nav-icon"></i>
                 <span class="nav-text">Achats</span>
             </a>
@@ -755,6 +755,7 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th>Code</th>
                                 <th>Nom</th>
                                 <th>Quantité</th>
                                 <th>Prix Achat</th>
@@ -775,6 +776,7 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
                             ?>
                             <tr>
                                 <td style="color:var(--text-muted);"><?= (int)$p['id'] ?></td>
+                                <td style="font-family:monospace;font-size:13px;color:var(--text-secondary);"><?= htmlspecialchars($p['code'] ?? '—') ?></td>
                                 <td class="td-main">
                                     <div style="display:flex;align-items:center;gap:10px;">
                                         <span style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#6366f1,#a78bfa);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
